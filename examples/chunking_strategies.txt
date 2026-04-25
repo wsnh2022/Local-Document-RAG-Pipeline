@@ -1,0 +1,43 @@
+Chunking Strategies for RAG Pipelines
+
+Chunking is the process of splitting a large document into smaller pieces before embedding and storing them in a vector database. The quality of chunking has a direct impact on retrieval quality and therefore on the accuracy of the final answer.
+
+Character-Based Chunking
+
+The simplest chunking strategy splits text at a fixed character count. For example, split every 500 characters with a 50-character overlap between consecutive chunks. This is easy to implement but has significant problems.
+
+Character counts do not map predictably to token counts. A 500-character chunk of dense technical prose might contain 150 tokens, while the same character count of plain conversational text might contain only 80 tokens. This inconsistency causes problems in two places.
+
+First, embedding models have a maximum token input. If a chunk exceeds the model's token limit, the text is silently truncated, losing information from the end of the chunk. Second, when assembling context for the LLM, you cannot reliably predict how many chunks will fit within the context window based on character count alone. You might send 10 chunks believing they total 3000 tokens, when they actually total 4800 tokens due to content density variation.
+
+Token-Based Chunking
+
+Token-based chunking uses a tokenizer to count tokens directly rather than characters. The most common tokenizer for this purpose is tiktoken, which implements the byte-pair encoding (BPE) used by GPT-series models and is broadly compatible with Mistral, Gemini, and other modern models.
+
+With token-based chunking, you set a MAX_CHUNK_TOKENS value such as 150. The chunker counts tokens as it builds each chunk and splits at the token boundary rather than the character boundary. This ensures every chunk is within a known token budget, making embedding and context assembly predictable.
+
+In this pipeline, MAX_CHUNK_TOKENS is set to 150 tokens. The token report from the stats command confirms that all chunks respect this limit, with zero oversized chunks.
+
+Recursive Text Splitting
+
+Rather than splitting on a fixed interval, recursive text splitting attempts to split at natural semantic boundaries first. It tries to split on paragraph breaks, then sentence boundaries, then word boundaries, only falling back to hard character/token splits when necessary.
+
+The RecursiveCharacterTextSplitter from langchain-text-splitters implements this approach. Combined with tiktoken for token counting (via the from_tiktoken_encoder factory), it produces chunks that respect both semantic boundaries and token budgets. This is the approach used in this pipeline.
+
+Overlap Between Chunks
+
+Most chunking strategies include a small overlap between consecutive chunks. If chunk N ends at token 150, chunk N+1 starts at token 130, repeating the last 20 tokens. This prevents information loss at chunk boundaries, particularly for sentences or concepts that span the split point.
+
+Overlap should be small relative to chunk size. An overlap of 20 tokens on a 150-token chunk (13%) is typical. Too much overlap wastes storage and embedding compute; too little risks losing context at split points.
+
+Semantic Chunking
+
+An advanced alternative to fixed-size chunking is semantic chunking, which uses the embedding model itself to identify natural topic boundaries. Text is split wherever the semantic similarity between adjacent sentences drops below a threshold. This produces chunks that are more topically coherent, at the cost of variable chunk sizes and higher compute requirements during ingestion.
+
+Semantic chunking is not implemented in this pipeline's v1 but is a natural next step for improved retrieval quality on long, topic-rich documents.
+
+Choosing a Chunk Size
+
+The right chunk size depends on several factors: the embedding model's token limit, the LLM's context window, the nature of the documents, and the typical query length. For dense technical documents queried with specific questions, smaller chunks (100-150 tokens) improve precision. For narrative documents summarised broadly, larger chunks (300-500 tokens) may capture more context per retrieval.
+
+A practical starting point for most RAG pipelines is 150 tokens with 20-token overlap, which is the configuration used in this project.

@@ -1,0 +1,9 @@
+# delete_files.txt
+# List file names to remove from the DB — one per line.
+# Lines starting with # are comments and will be ignored.
+# Blank lines are also ignored.
+#
+# Example:
+# intro.txt
+# what_is_rag.txt
+# vector_databases.md

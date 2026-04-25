@@ -1,0 +1,27 @@
+What is Retrieval-Augmented Generation (RAG)?
+
+Retrieval-Augmented Generation (RAG) is a technique in natural language processing that enhances large language models by combining them with an external retrieval system. Instead of relying solely on knowledge encoded during training, a RAG system retrieves relevant documents at query time and uses them as additional context for the model's response.
+
+How RAG Works
+
+A RAG pipeline has two main phases: ingestion and querying.
+
+During ingestion, documents are loaded, split into smaller chunks, and converted into vector embeddings using a sentence encoder model. These embeddings capture the semantic meaning of each chunk and are stored in a vector database alongside the original text.
+
+During querying, the user's question is also converted into a vector embedding using the same encoder. The vector database is then searched for the chunks whose embeddings are most similar to the query embedding. This is typically measured using cosine similarity. The top-k most relevant chunks are retrieved and injected into the language model's prompt as context.
+
+Why RAG Is Useful
+
+Standard language models have a fixed knowledge cutoff and cannot access information beyond what they were trained on. RAG solves this by allowing the model to reference any document corpus at inference time. This makes RAG especially valuable for question answering over private documents, internal knowledge bases, or frequently updated information.
+
+RAG also improves factual grounding. Because the model's answer is based on specific retrieved passages, it is less likely to hallucinate facts. The retrieved sources can be cited alongside the answer, providing transparency about where the information came from.
+
+Limitations of RAG
+
+RAG is only as good as its retrieval step. If the relevant passage is not retrieved, the model cannot produce a correct answer regardless of its own capabilities. Poor chunking strategies, low-quality embeddings, or insufficient context budgets can all degrade retrieval quality.
+
+Another limitation is latency. The retrieval step adds overhead compared to a direct model call. For real-time applications, this must be carefully managed.
+
+RAG vs Fine-Tuning
+
+Fine-tuning trains the model itself on domain-specific data, encoding knowledge directly into model weights. RAG keeps the model weights fixed and instead retrieves knowledge at inference time. RAG is generally preferred when the knowledge base changes frequently, when transparency and source attribution matter, or when training data is limited. Fine-tuning is preferred when the task requires a specific style, format, or reasoning pattern that cannot be conveyed through retrieved context alone.
