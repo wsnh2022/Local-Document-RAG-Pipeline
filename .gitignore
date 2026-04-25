@@ -54,4 +54,6 @@ htmlcov/
 *.log
 
 # personal files
-ROADMAP.md
+ROADMAP.mdgitsync.bat 
+deploy-log.txt 
+.gitsync.lock 

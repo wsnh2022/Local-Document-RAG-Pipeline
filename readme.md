@@ -455,14 +455,14 @@ Each chunk stored in LanceDB has this shape:
 
 These are intentionally deferred -the core pipeline is solid first:
 
-- [ ] Web UI / chat interface
-- [ ] Hybrid search (BM25 keyword + vector)
-- [ ] Metadata filtering by file type or date range
-- [ ] File watcher for automatic re-ingestion
-- [ ] Chat history and conversation memory
-- [ ] Cross-encoder reranking for better precision
-- [ ] OCR support for scanned PDFs
-- [ ] Batch ingestion progress bar
+- Web UI / chat interface
+- Hybrid search (BM25 keyword + vector)
+- Metadata filtering by file type or date range
+- File watcher for automatic re-ingestion
+- Chat history and conversation memory
+- Cross-encoder reranking for better precision
+- OCR support for scanned PDFs
+- Batch ingestion progress bar
 
 ---
 
