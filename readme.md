@@ -1,4 +1,4 @@
-![cover]("docs/cover.png)
+![cover](docs/cover.png)
 # local-document-rag-pipeline (CLI)
 
 > **A local CLI RAG system that ingests your documents and answers questions about them -with token-aware chunking, SHA256 deduplication, and strict context budgeting. Runs fully offline except the final LLM call.**
